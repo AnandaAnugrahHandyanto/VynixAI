@@ -1,4 +1,3 @@
-// 📁 telegram-bot-gemini/bot.js
 import TelegramBot from 'node-telegram-bot-api';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
