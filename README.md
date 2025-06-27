@@ -45,6 +45,9 @@ Semua perubahan penting pada proyek ini didokumentasikan di sini.
 - Setelah kirim chat:
   - Input prompt otomatis `focus()`
   - Scroll otomatis ke bawah
+- Tombol ❌ kini menghapus preview gambar dengan benar
+- Gambar yang dibatalkan tidak akan dikirim saat prompt dikirim
+- Bug di mana gambar yang dihapus tetap muncul di riwayat chat sudah diperbaiki
 
 ### 🎨 Perbaikan Tampilan
 - Merubah total tampilan desain UI awal.

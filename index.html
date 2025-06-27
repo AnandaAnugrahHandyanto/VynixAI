@@ -11,6 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
+
   <div id="app-container">
     <header class="app-header">
       <div class="header-left">
@@ -49,6 +50,7 @@
         <option value="Buatkan puisi tentang: ">📝 Puisi</option>
         <option value="Tuliskan sebagai developer note: ">💻 Catatan Developer</option>
       </select>
+      <div id="imagePreviewArea" style="margin-top: 10px;"></div>
       <form id="imageForm" class="prompt-form">
         <button type="button" id="uploadBtn" class="icon-button" title="Lampirkan Gambar">📎</button>
         <input type="file" id="imageInput" accept="image/*" hidden />
@@ -68,7 +70,6 @@
     <button id="closeSettingsBtn">✖️</button>
   </div>
 
-  <!-- ✅ Tambahkan kembali isi ini -->
   <div class="settings-content">
     <label>
       Max Token:

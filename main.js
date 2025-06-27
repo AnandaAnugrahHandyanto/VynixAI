@@ -30,6 +30,8 @@ const promptTemplate = document.getElementById("promptTemplate");
 const suggestionChips = document.querySelector(".suggestion-chips");
 
 let conversationHistory = [];
+let imageWasCancelled = false;
+let selectedImageBlob = null;
 
 let md = new MarkdownIt({
   highlight: function (str, lang) {
@@ -104,7 +106,7 @@ const sendMessage = async () => {
   sendButton.disabled = true;
   if (uploadBtn) uploadBtn.disabled = true;
   if (micBtn && (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window))) {
-     micBtn.disabled = true;
+  micBtn.disabled = true;
   }
 
   const userDiv = document.createElement("div");
@@ -124,7 +126,7 @@ const sendMessage = async () => {
   const parts = [{ text: prompt }];
 
   let imageFile = null;
-  if (imageInput && imageInput.files.length > 0) {
+  if (imageInput && imageInput.files.length > 0 && !imageWasCancelled) {
     imageFile = imageInput.files[0];
     const base64 = await toBase64(imageFile);
     parts.unshift({
@@ -255,6 +257,7 @@ const sendMessage = async () => {
     if (uploadBtn) uploadBtn.disabled = false;
     if (micBtn) micBtn.disabled = false;
     promptInput.focus();
+    imageWasCancelled = false;
   }
 };
 
@@ -284,13 +287,32 @@ if (promptInput) {
 }
 
 if (uploadBtn && imageInput) {
-  imageInput.addEventListener('change', () => {
-    if (imageInput.files.length > 0) {
-      uploadBtn.style.color = 'var(--gemini-accent-blue)';
-    } else {
-      uploadBtn.style.color = 'var(--gemini-light-text)';
-    }
-  });
+imageInput.addEventListener("change", async () => {
+  const previewExisting = document.querySelector(".chat.user.pending-image");
+  if (previewExisting) previewExisting.remove(); // hilangkan preview sebelumnya
+
+  if (imageInput.files.length > 0) {
+    const file = imageInput.files[0];
+    const base64 = await toBase64(file);
+
+    const userDiv = document.createElement("div");
+    userDiv.className = "chat user pending-image fade-in";
+
+    const userContentDiv = document.createElement("div");
+    const imgPreview = document.createElement("img");
+    imgPreview.src = base64;
+    imgPreview.className = "image-preview";
+    userContentDiv.appendChild(imgPreview);
+
+    userDiv.appendChild(userContentDiv);
+    userDiv.innerHTML += `<small>Gambar siap dikirim</small>`;
+    chatHistory.appendChild(userDiv);
+    scrollToBottom();
+  } else {
+  const previewExisting = document.querySelector(".chat.user.pending-image");
+  if (previewExisting) previewExisting.remove();
+}
+});
 }
 
 if (micBtn) {
@@ -355,6 +377,7 @@ if (themeSelector) {
     document.body.className = '';
     document.body.classList.add(`theme-${theme}`);
     localStorage.setItem("selected-theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }
   themeSelector.addEventListener("change", () => {
     applyTheme(themeSelector.value);
@@ -590,6 +613,47 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     greetingScreen?.classList.add("active");
     chatScreen?.classList.remove("active");
+  }
+});
+
+// On page load or when changing themes, best to add inline in `head` to avoid FOUC
+document.documentElement.classList.toggle(
+  "dark",
+  localStorage.theme === "dark" ||
+    (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
+);
+
+imageInput?.addEventListener("change", async () => {
+  const imagePreviewArea = document.getElementById("imagePreviewArea");
+  imagePreviewArea.innerHTML = "";
+  selectedImageBlob = null;
+
+  if (imageInput.files.length > 0) {
+    const file = imageInput.files[0];
+    selectedImageBlob = file;
+    const base64 = await toBase64(file);
+
+    // Bungkus dalam div agar tombol silang bisa di posisi atas
+    const previewWrapper = document.createElement("div");
+    previewWrapper.className = "image-preview-wrapper";
+
+    const removeBtn = document.createElement("button");
+    removeBtn.innerHTML = "❌";
+    removeBtn.className = "remove-image-btn";
+    removeBtn.title = "Hapus Gambar";
+    removeBtn.onclick = () => {
+      imageInput.value = "";
+      imagePreviewArea.innerHTML = "";
+      selectedImageBlob = null; // ⬅️ HAPUS JUGA DARI VARIABEL
+    };
+
+    const imgPreview = document.createElement("img");
+    imgPreview.src = base64;
+    imgPreview.className = "image-preview";
+
+    previewWrapper.appendChild(removeBtn);
+    previewWrapper.appendChild(imgPreview);
+    imagePreviewArea.appendChild(previewWrapper);
   }
 });
 

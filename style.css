@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
 *,
 *::before,
 *::after {
@@ -1010,4 +1013,48 @@ body.theme-minimal .copy-btn {
   .settings-sidebar.active {
     right: 0;
   }
+}
+
+#imagePreviewArea img.image-preview {
+  display: block;
+  margin-top: 10px;
+  max-height: 150px;
+  border-radius: 8px;
+}
+
+.image-preview-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin-top: 10px;
+}
+
+.image-preview-wrapper img.image-preview {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-image-btn:hover {
+  background: rgba(255, 0, 0, 0.8);
 }
